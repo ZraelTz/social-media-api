@@ -12,5 +12,5 @@ public interface UserMapper extends DefaultMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "password", target = "password", ignore = true)
-    User toUser(UserRegistrationRequest request);
+    User createUser(UserRegistrationRequest request);
 }

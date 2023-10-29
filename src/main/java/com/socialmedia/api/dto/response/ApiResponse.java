@@ -13,6 +13,7 @@ public class ApiResponse<T> {
 
     private T data;
 
-    private String statusMessage;
+    @Builder.Default
+    private String message = "successful";
 
 }

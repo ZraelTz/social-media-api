@@ -31,7 +31,7 @@ public class ControllerAdviceHandler {
     public final ResponseEntity<ApiResponse<Boolean>> handleApiException(ApiException ex, WebRequest request) {
         return ResponseEntity.status(ex.getHttpStatus())
                 .body(ApiResponse.<Boolean>builder()
-                        .statusMessage(ex.getLocalizedMessage())
+                        .message(ex.getLocalizedMessage())
                         .data(false)
                         .build());
     }
@@ -40,7 +40,7 @@ public class ControllerAdviceHandler {
     public final ResponseEntity<ApiResponse<Boolean>> handleJacksonException(JacksonException ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.<Boolean>builder()
-                        .statusMessage("Invalid json request")
+                        .message("Invalid json request")
                         .data(false)
                         .build());
     }
@@ -49,7 +49,7 @@ public class ControllerAdviceHandler {
     public final ResponseEntity<ApiResponse<Boolean>> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
         return ResponseEntity.status(ex.getStatusCode())
                 .body(ApiResponse.<Boolean>builder()
-                        .statusMessage(ex.getLocalizedMessage())
+                        .message(ex.getLocalizedMessage())
                         .data(false)
                         .build());
     }
@@ -58,7 +58,7 @@ public class ControllerAdviceHandler {
     public final ResponseEntity<ApiResponse<Boolean>> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, WebRequest request) {
         return ResponseEntity.status(ex.getStatusCode())
                 .body(ApiResponse.<Boolean>builder()
-                        .statusMessage(ex.getLocalizedMessage())
+                        .message(ex.getLocalizedMessage())
                         .data(false)
                         .build());
     }
@@ -67,7 +67,7 @@ public class ControllerAdviceHandler {
     public final ResponseEntity<ApiResponse<Boolean>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.<Boolean>builder()
-                        .statusMessage(ex.getLocalizedMessage())
+                        .message(ex.getLocalizedMessage())
                         .data(false)
                         .build());
     }
@@ -76,7 +76,7 @@ public class ControllerAdviceHandler {
     public final ResponseEntity<ApiResponse<Boolean>> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex, WebRequest request) {
         return ResponseEntity.status(ex.getStatusCode())
                 .body(ApiResponse.<Boolean>builder()
-                        .statusMessage(ex.getLocalizedMessage())
+                        .message(ex.getLocalizedMessage())
                         .data(false)
                         .build());
     }
@@ -85,7 +85,7 @@ public class ControllerAdviceHandler {
     public ResponseEntity<ApiResponse<Boolean>> handleAuthException(AuthenticationException ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.<Boolean>builder()
-                        .statusMessage(ex.getLocalizedMessage())
+                        .message(ex.getLocalizedMessage())
                         .data(false)
                         .build());
     }
@@ -94,7 +94,7 @@ public class ControllerAdviceHandler {
     public ResponseEntity<ApiResponse<Boolean>> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex, WebRequest request) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.<Boolean>builder()
-                        .statusMessage("Please provide the missing parameter: " + ex.getParameterName())
+                        .message("Please provide the missing parameter: " + ex.getParameterName())
                         .data(false)
                         .build());
     }
@@ -114,7 +114,7 @@ public class ControllerAdviceHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.<Boolean>builder()
-                        .statusMessage(fieldError)
+                        .message(fieldError)
                         .data(false)
                         .build());
     }
@@ -137,7 +137,7 @@ public class ControllerAdviceHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.<Boolean>builder()
-                        .statusMessage(errorMessage)
+                        .message(errorMessage)
                         .data(false)
                         .build());
     }

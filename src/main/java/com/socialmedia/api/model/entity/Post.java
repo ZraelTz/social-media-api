@@ -24,13 +24,17 @@ public class Post extends BaseEntity<Long> {
     @JsonIgnore
     private User user;
 
+    @Builder.Default
+    @Column(name = "like_count")
+    private int likeCount = 0;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Builder.Default
     @JsonIgnore
     private Set<PostLike> likes = new LinkedHashSet<>();
 
-    public int getLikeCount() {
-        return likes.size();
+    public void updateLikeCount() {
+        likeCount += 1;
     }
 
     public String getBy() {

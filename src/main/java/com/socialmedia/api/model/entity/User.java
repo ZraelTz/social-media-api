@@ -42,6 +42,14 @@ public class User extends BaseEntity<Long> implements UserDetails {
     @JsonIgnore
     private Set<User> following = new LinkedHashSet<>();
 
+    @Builder.Default
+    @Column(name = "follower_count")
+    private int followerCount = 0;
+
+    @Builder.Default
+    @Column(name = "following_count")
+    private int followingCount = 0;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @Builder.Default
     @JsonIgnore
@@ -50,6 +58,54 @@ public class User extends BaseEntity<Long> implements UserDetails {
     public boolean addPost(Post post) {
         if (Objects.nonNull(post)) {
             return this.posts.add(post);
+        }
+
+        return false;
+    }
+
+    public boolean addFollowing(User user) {
+        if (Objects.nonNull(user)) {
+            boolean followingAdded = this.following.add(user);
+            if (followingAdded) {
+                followingCount += 1;
+
+            }
+
+            return followingAdded;
+        }
+
+        return false;
+    }
+
+    public void addFollower(User user) {
+        if (Objects.nonNull(user)) {
+            boolean followerAdded = this.followers.add(user);
+            if (followerAdded) {
+                followerCount += 1;
+            }
+        }
+    }
+
+    public boolean removeFollowing(User user) {
+        if (Objects.nonNull(user)) {
+            boolean followingRemoved = this.following.remove(user);
+            if (followingRemoved) {
+                followingCount -= 1;
+            }
+
+            return followingRemoved;
+        }
+
+        return false;
+    }
+
+    public boolean removeFollower(User user) {
+        if (Objects.nonNull(user)) {
+            boolean followerRemoved = this.followers.remove(user);
+            if (followerRemoved) {
+                followerCount -= 1;
+            }
+            return followerRemoved;
         }
 
         return false;

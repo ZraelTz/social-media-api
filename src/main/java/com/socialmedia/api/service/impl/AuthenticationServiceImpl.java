@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -62,7 +63,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             return ApiResponse.<LoginResponse>builder()
                     .data(loginResponse)
-                    .statusMessage("Login successful")
+                    .message("Login successful")
                     .build();
         }
 
@@ -103,5 +104,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
         }
     }
+
+    @Override
+    public User getAuthUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof User) {
+                return (User) authentication.getPrincipal();
+            }
+
+            String username = authentication.getName();
+            return userRepository.findByEmailOrUsername(username, username).orElse(null);
+        }
+
+        return null;
+    }
+
 
 }
