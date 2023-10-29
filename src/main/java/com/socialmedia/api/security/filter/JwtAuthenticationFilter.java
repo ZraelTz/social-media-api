@@ -1,6 +1,6 @@
 package com.socialmedia.api.security.filter;
 
-import com.socialmedia.api.security.JwtService;
+import com.socialmedia.api.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

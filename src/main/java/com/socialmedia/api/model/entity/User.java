@@ -87,4 +87,6 @@ public class User extends BaseEntity<Long> implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 }
