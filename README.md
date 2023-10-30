@@ -58,3 +58,4 @@ To access the api swagger documentation<br/>
 
 - `CONTAINER VIRTUALIZATION`: Docker (Docker compose for config)
 ---
+More Documentation and API description can be found on the Swagger Doc.
