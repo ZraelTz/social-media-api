@@ -37,7 +37,7 @@ To access the api swagger documentation<br/>
 - `Application Server` : Embedded Apache Tomcat Server
 
 
-- `DATABASE`: H2 in memory file database (SQL implementation)
+- `DATABASE`: H2 in memory file database (SQL implementation) with preloaded test data
 
 
 - `ORM`: Hibernate with Spring Data Jpa Implementation
