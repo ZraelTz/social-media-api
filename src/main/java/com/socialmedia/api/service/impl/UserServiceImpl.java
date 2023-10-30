@@ -1,20 +1,25 @@
 package com.socialmedia.api.service.impl;
 
+import com.socialmedia.api.core.exception.ApiException;
+import com.socialmedia.api.core.exception.NotFoundException;
 import com.socialmedia.api.dto.request.UserRegistrationRequest;
+import com.socialmedia.api.dto.request.update.UserFollowingUpdateRequest;
 import com.socialmedia.api.dto.response.ApiResponse;
 import com.socialmedia.api.dto.response.RegistrationResponse;
-import com.socialmedia.api.exception.ApiException;
-import com.socialmedia.api.exception.NotFoundException;
 import com.socialmedia.api.mapper.UserMapper;
 import com.socialmedia.api.model.entity.User;
+import com.socialmedia.api.model.entity.projection.UserView;
+import com.socialmedia.api.model.entity.projection.impl.RestPage;
 import com.socialmedia.api.repository.UserRepository;
 import com.socialmedia.api.service.AuthenticationService;
 import com.socialmedia.api.service.UserService;
-import io.micrometer.common.util.StringUtils;
+import com.socialmedia.api.util.PaginationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,7 +32,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationService authService;
 
     @Override
-    public ApiResponse<RegistrationResponse> register(UserRegistrationRequest request) {
+    public ApiResponse<RegistrationResponse> registerUser(UserRegistrationRequest request) {
         String email = request.getEmail();
         if (userRepository.existsByEmail(email)) {
             throw new ApiException("Email already exists");
@@ -54,21 +59,54 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse<User> follow(String username) {
-        if (StringUtils.isBlank(username)) {
-            throw new ApiException("Username is blank");
-        }
-
-        User authUser = authService.getAuthUser();
-        Optional<User> optionalUser = userRepository.findByEmailOrUsername(username, username);
+    public ApiResponse<User> updateFollowing(UserFollowingUpdateRequest request) {
+        String username = request.getUsername();
+        Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("Username not found");
         }
 
-        User userToBeFollowed = optionalUser.get();
+        Boolean isFollow = request.getFollow();
+        User user = optionalUser.get();
+        User authUser = authService.getAuthUser();
+        if (isFollow) {
+            return follow(authUser, user);
+        }
+
+        return unfollow(authUser, user);
+    }
+
+    @Override
+    public ApiResponse<RestPage<UserView>> getFollowings(int page, int pageSize) {
+        User authUser = authService.getAuthUser();
+        ArrayList<UserView> followings = userMapper.toUserViews(authUser.getFollowings());
+        RestPage<UserView> users
+                = new RestPage<>(followings, PaginationUtil.pageable(User.class, page, pageSize), followings.size());
+
+        return ApiResponse.<RestPage<UserView>>builder()
+                .data(users)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<RestPage<UserView>> getFollowers(int page, int pageSize) {
+        User authUser = authService.getAuthUser();
+        List<UserView> followers = userMapper.toUserViews(authUser.getFollowers());
+        RestPage<UserView> users
+                = new RestPage<>(followers, PaginationUtil.pageable(User.class, page, pageSize), followers.size());
+
+        return ApiResponse.<RestPage<UserView>>builder()
+                .data(users)
+                .build();
+    }
+
+    private ApiResponse<User> follow(User authUser, User userToBeFollowed) {
         boolean followingAdded = authUser.addFollowing(userToBeFollowed);
         if (!followingAdded) {
-            throw new ApiException("You're already following this user");
+            return ApiResponse.<User>builder()
+                    .data(userToBeFollowed)
+                    .message("User already followed")
+                    .build();
         }
 
         userRepository.save(authUser);
@@ -81,22 +119,13 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    @Override
-    public ApiResponse<User> unfollow(String username) {
-        if (StringUtils.isBlank(username)) {
-            throw new ApiException("Username is blank");
-        }
-
-        User authUser = authService.getAuthUser();
-        Optional<User> optionalUser = userRepository.findByEmailOrUsername(username, username);
-        if (optionalUser.isEmpty()) {
-            throw new NotFoundException("User not found");
-        }
-
-        User userToBeUnfollowed = optionalUser.get();
+    private ApiResponse<User> unfollow(User authUser, User userToBeUnfollowed) {
         boolean followingRemoved = authUser.removeFollowing(userToBeUnfollowed);
         if (!followingRemoved) {
-            throw new ApiException("You're not following this user");
+            return ApiResponse.<User>builder()
+                    .data(userToBeUnfollowed)
+                    .message("User already unfollowed")
+                    .build();
         }
 
         userRepository.save(authUser);
@@ -105,8 +134,7 @@ public class UserServiceImpl implements UserService {
 
         return ApiResponse.<User>builder()
                 .data(userToBeUnfollowed)
-                .message("User unfollowed")
-                .build();
+                .message("User unfollowed").build();
     }
 
 

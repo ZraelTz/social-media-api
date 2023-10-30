@@ -10,10 +10,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "post_like")
-public class PostLike extends Like {
-
+@Table(name = "comment_like")
+public class CommentLike extends Like {
     @ManyToOne
-    @JoinColumn(name = "post_fk", nullable = false)
-    private Post post;
+    @JoinColumn(name = "comment_fk", nullable = false)
+    private Comment comment;
 }

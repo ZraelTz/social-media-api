@@ -1,4 +1,4 @@
-package com.socialmedia.api.dto.request;
+package com.socialmedia.api.dto.request.update;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.socialmedia.api.model.validation.order.FirstOrder;
@@ -6,22 +6,26 @@ import com.socialmedia.api.model.validation.order.FourthOrder;
 import com.socialmedia.api.model.validation.order.SecondOrder;
 import com.socialmedia.api.model.validation.order.ThirdOrder;
 import jakarta.validation.GroupSequence;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-@GroupSequence({PostCreateRequest.class, FirstOrder.class,
+@GroupSequence({LikeUpdateRequest.class, FirstOrder.class,
         SecondOrder.class, ThirdOrder.class, FourthOrder.class})
-public class PostCreateRequest {
+public class LikeUpdateRequest {
 
-    @NotBlank(message = "Content is blank", groups = FirstOrder.class)
-    @Size(max = 250, message = "Content is over 250 characters", groups = SecondOrder.class)
-    private String content;
+    @NotNull(message = "like id must be provided", groups = FirstOrder.class)
+    @Min(value = 1, message = "Invalid Like Id", groups = SecondOrder.class)
+    private Long id;
+
+    @NotNull(message = "'like' boolean must be provided")
+    private Boolean like;
+
 }

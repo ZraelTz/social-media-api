@@ -1,13 +1,17 @@
 package com.socialmedia.api.controller;
 
 import com.socialmedia.api.dto.request.UserRegistrationRequest;
+import com.socialmedia.api.dto.request.update.UserFollowingUpdateRequest;
 import com.socialmedia.api.dto.response.ApiResponse;
 import com.socialmedia.api.dto.response.RegistrationResponse;
 import com.socialmedia.api.model.entity.User;
+import com.socialmedia.api.model.entity.projection.UserView;
+import com.socialmedia.api.model.entity.projection.impl.RestPage;
 import com.socialmedia.api.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,17 +26,27 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ApiResponse<RegistrationResponse>> register(@RequestBody @Valid
                                                                       UserRegistrationRequest request) {
-        return ResponseEntity.ok(userService.register(request));
+        return ResponseEntity.ok(userService.registerUser(request));
     }
 
-    @PatchMapping(path = "/follow")
-    public ResponseEntity<ApiResponse<User>> follow(@RequestParam String username) {
-        return ResponseEntity.ok(userService.follow(username));
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/followings")
+    public ResponseEntity<ApiResponse<RestPage<UserView>>> getFollowings(@RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "20") int pageSize) {
+        return ResponseEntity.ok(userService.getFollowings(page, pageSize));
     }
 
-    @PatchMapping(path = "/unfollow")
-    public ResponseEntity<ApiResponse<User>> unfollow(@RequestParam String username) {
-        return ResponseEntity.ok(userService.unfollow(username));
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/followers")
+    public ResponseEntity<ApiResponse<RestPage<UserView>>> getFollowers(@RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "20") int pageSize) {
+        return ResponseEntity.ok(userService.getFollowers(page, pageSize));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping
+    public ResponseEntity<ApiResponse<User>> updateFollowing(@RequestBody @Valid UserFollowingUpdateRequest request) {
+        return ResponseEntity.ok(userService.updateFollowing(request));
     }
 
 }

@@ -12,7 +12,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -23,7 +22,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @DynamicUpdate
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity<U> {
+public abstract class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +32,7 @@ public abstract class BaseEntity<U> {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    @JsonIgnore
     @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;

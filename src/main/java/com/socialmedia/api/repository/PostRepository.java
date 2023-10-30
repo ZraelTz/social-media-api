@@ -10,11 +10,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    Page<PostView> findByUser(User user, Pageable pageable);
 
     Page<PostView> findPostsBy(Pageable pageable);
 
-    PostView findPostById(long id);
+    PostView findPostById(long postId);
 
     Optional<Post> findByIdAndUser(long postId, User user);
+
+    Page<PostView> findByUser_Username(String username, Pageable pageable);
 }

@@ -1,8 +1,8 @@
-package com.socialmedia.api.controller;
+package com.socialmedia.api.controller.advice;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.socialmedia.api.dto.response.ApiResponse;
-import com.socialmedia.api.exception.ApiException;
+import com.socialmedia.api.core.exception.ApiException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;

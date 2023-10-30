@@ -12,6 +12,7 @@ import java.io.IOException;
 
 public interface AuthenticationService {
 
+    @Transactional(readOnly = true)
     ApiResponse<LoginResponse> login(LoginRequest request);
 
     @Transactional(readOnly = true)

@@ -16,7 +16,7 @@ import java.util.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "app_user")
-public class User extends BaseEntity<Long> implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
 
     @Column
     private String profilePicUrl;
@@ -24,11 +24,12 @@ public class User extends BaseEntity<Long> implements UserDetails {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
+    @JsonIgnore
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
     @JsonIgnore
+    @Column(nullable = false)
     private String password;
 
     @ManyToMany
@@ -40,7 +41,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
     @ManyToMany(mappedBy = "followers")
     @Builder.Default
     @JsonIgnore
-    private Set<User> following = new LinkedHashSet<>();
+    private Set<User> followings = new LinkedHashSet<>();
 
     @Builder.Default
     @Column(name = "follower_count")
@@ -65,7 +66,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
 
     public boolean addFollowing(User user) {
         if (Objects.nonNull(user)) {
-            boolean followingAdded = this.following.add(user);
+            boolean followingAdded = this.followings.add(user);
             if (followingAdded) {
                 followingCount += 1;
 
@@ -88,7 +89,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
 
     public boolean removeFollowing(User user) {
         if (Objects.nonNull(user)) {
-            boolean followingRemoved = this.following.remove(user);
+            boolean followingRemoved = this.followings.remove(user);
             if (followingRemoved) {
                 followingCount -= 1;
             }
@@ -99,16 +100,13 @@ public class User extends BaseEntity<Long> implements UserDetails {
         return false;
     }
 
-    public boolean removeFollower(User user) {
+    public void removeFollower(User user) {
         if (Objects.nonNull(user)) {
             boolean followerRemoved = this.followers.remove(user);
             if (followerRemoved) {
                 followerCount -= 1;
             }
-            return followerRemoved;
         }
-
-        return false;
     }
 
     public boolean removePost(Post post) {
@@ -120,29 +118,33 @@ public class User extends BaseEntity<Long> implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority("USER"));
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
     }
-
 
 }

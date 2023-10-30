@@ -10,8 +10,4 @@ public interface UserView extends BaseView {
     String getProfilePicUrl();
 
     String getUsername();
-
-    int getFollowerCount();
-
-    int getFollowingCount();
 }

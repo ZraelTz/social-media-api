@@ -1,11 +1,11 @@
 package com.socialmedia.api.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.socialmedia.api.core.exception.ApiException;
+import com.socialmedia.api.core.exception.NotFoundException;
 import com.socialmedia.api.dto.request.LoginRequest;
 import com.socialmedia.api.dto.response.ApiResponse;
 import com.socialmedia.api.dto.response.LoginResponse;
-import com.socialmedia.api.exception.ApiException;
-import com.socialmedia.api.exception.NotFoundException;
 import com.socialmedia.api.model.entity.User;
 import com.socialmedia.api.repository.UserRepository;
 import com.socialmedia.api.service.AuthenticationService;
@@ -19,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -111,11 +112,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (authentication != null && authentication.isAuthenticated()) {
             Object principal = authentication.getPrincipal();
 
+            String username;
             if (principal instanceof User) {
-                return (User) authentication.getPrincipal();
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                username = userDetails.getUsername();
+            } else {
+                username = authentication.getName();
             }
 
-            String username = authentication.getName();
             return userRepository.findByEmailOrUsername(username, username).orElse(null);
         }
 
