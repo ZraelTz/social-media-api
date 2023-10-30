@@ -1,13 +1,14 @@
 package com.socialmedia.api.service.impl;
 
+import com.socialmedia.api.core.exception.ApiException;
+import com.socialmedia.api.core.exception.NotFoundException;
 import com.socialmedia.api.dto.request.PostCreateRequest;
 import com.socialmedia.api.dto.request.update.LikeUpdateRequest;
 import com.socialmedia.api.dto.request.update.PostUpdateRequest;
 import com.socialmedia.api.dto.response.ApiResponse;
-import com.socialmedia.api.core.exception.ApiException;
-import com.socialmedia.api.core.exception.NotFoundException;
 import com.socialmedia.api.mapper.PostMapper;
-import com.socialmedia.api.model.entity.*;
+import com.socialmedia.api.model.entity.Post;
+import com.socialmedia.api.model.entity.User;
 import com.socialmedia.api.model.entity.projection.PostView;
 import com.socialmedia.api.model.entity.projection.impl.RestPage;
 import com.socialmedia.api.repository.PostLikeRepository;
@@ -18,7 +19,6 @@ import com.socialmedia.api.service.PostService;
 import com.socialmedia.api.util.PaginationUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -69,75 +69,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public ApiResponse<Post> updateLike(LikeUpdateRequest request) {
-        Long id = request.getId();
-        if (id <= 0) {
-            throw new ApiException("Invalid Comment Id");
-        }
-
-        Optional<Post> optionalComment = postRepository.findById(id);
-        if (optionalComment.isEmpty()) {
-            throw new NotFoundException("Comment not found");
-        }
-
-        Post post = optionalComment.get();
-        User authUser = authService.getAuthUser();
-        Boolean isLike = request.getLike();
-        if (isLike) {
-            return like(authUser, post);
-        }
-
-        return unlike(authUser, post);
+        return null;
     }
 
     private ApiResponse<Post> like(User authUser, Post post) {
-        PostLike postLike = PostLike.builder()
-                .post(post)
-                .user(authUser)
-                .build();
-
-        boolean likeAdded = post.addLike(postLike);
-        if (!likeAdded) {
-            return ApiResponse.<Post>builder()
-                    .data(post)
-                    .message("Post already liked")
-                    .build();
-        }
-
-        postLikeRepository.save(postLike);
-        postRepository.save(post);
-        return ApiResponse.<Post>builder()
-                .data(post)
-                .message("Post liked")
-                .build();
+        return null;
     }
 
     private ApiResponse<Post> unlike(User authUser, Post post) {
-        Optional<PostLike> optionalPostLike = post.getLikes().stream()
-                .filter(like -> like.getUser().equals(authUser))
-                .findFirst();
-
-        if (optionalPostLike.isEmpty()) {
-            return ApiResponse.<Post>builder()
-                    .data(post)
-                    .message("Post already unliked")
-                    .build();
-        }
-
-        PostLike postLike = optionalPostLike.get();
-        boolean likeRemoved = post.removeLike(postLike);
-        if (!likeRemoved) {
-            return ApiResponse.<Post>builder()
-                    .data(post)
-                    .message("Post already unliked")
-                    .build();
-        }
-
-        postRepository.save(post);
-        postLikeRepository.delete(postLike);
-        return ApiResponse.<Post>builder()
-                .data(post)
-                .message("Post unliked")
-                .build();
+        return null;
     }
 
     @Override
