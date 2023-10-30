@@ -8,6 +8,7 @@ import com.socialmedia.api.model.entity.User;
 import com.socialmedia.api.model.entity.projection.UserView;
 import com.socialmedia.api.model.entity.projection.impl.RestPage;
 import com.socialmedia.api.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
+    @Operation(description = "Register as a new user")
     public ResponseEntity<ApiResponse<RegistrationResponse>> register(@RequestBody @Valid
                                                                       UserRegistrationRequest request) {
         return ResponseEntity.ok(userService.registerUser(request));
@@ -31,6 +33,7 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/followings")
+    @Operation(description = "Fetch the users you're following as a logged in user")
     public ResponseEntity<ApiResponse<RestPage<UserView>>> getFollowings(@RequestParam(defaultValue = "0") int page,
                                                                      @RequestParam(defaultValue = "20") int pageSize) {
         return ResponseEntity.ok(userService.getFollowings(page, pageSize));
@@ -38,6 +41,7 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/followers")
+    @Operation(description = "Fetch your followers as a logged in user")
     public ResponseEntity<ApiResponse<RestPage<UserView>>> getFollowers(@RequestParam(defaultValue = "0") int page,
                                                                         @RequestParam(defaultValue = "20") int pageSize) {
         return ResponseEntity.ok(userService.getFollowers(page, pageSize));
@@ -45,6 +49,7 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated()")
     @PatchMapping
+    @Operation(description = "Follow or unfollow a user as a logged in user")
     public ResponseEntity<ApiResponse<User>> updateFollowing(@RequestBody @Valid UserFollowingUpdateRequest request) {
         return ResponseEntity.ok(userService.updateFollowing(request));
     }
